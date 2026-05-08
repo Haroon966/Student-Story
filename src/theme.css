@@ -1,0 +1,47 @@
+:root {
+  color-scheme: light;
+
+  --theme-primary: #155b5b;
+  --theme-primary-hover: #104848;
+  --theme-primary-soft: #e7f0ef;
+  --theme-primary-foreground: #ffffff;
+
+  --theme-background: #f6f8f7;
+  --theme-chat-bg: #eef4f2;
+  --theme-chat-pattern: radial-gradient(rgb(21 91 91 / 0.07) 1px, transparent 1px);
+
+  --theme-charcoal: #36454f;
+  --theme-charcoal-muted: #657278;
+
+  --theme-white: #ffffff;
+  --theme-soft-white: #fefefe;
+
+  --theme-surface: #ffffff;
+  --theme-surface-subtle: #fefefe;
+  --theme-surface-muted: #eef4f2;
+
+  --theme-border: #dbe6e3;
+  --theme-border-strong: #c5d5d0;
+  --theme-ring: rgb(21 91 91 / 0.35);
+
+  /* Top bars (chats list + conversation) */
+  --theme-app-header-bg: var(--theme-primary);
+  --theme-app-header-fg: #ffffff;
+
+  --theme-bubble-out: #d8ebe8;
+  --theme-bubble-meta: rgb(54 69 79 / 0.62);
+
+  --theme-composer-bg: var(--theme-white);
+
+  --theme-danger: #b42318;
+  --theme-danger-hover: #9d1f15;
+  --theme-danger-bg: rgb(180 35 24 / 0.12);
+
+  --accent: var(--theme-primary);
+  --accent-bg: var(--theme-primary-soft);
+  --accent-border: var(--theme-primary);
+  --border: var(--theme-border-strong);
+  --text-h: var(--theme-charcoal);
+  --social-bg: var(--theme-surface);
+  --shadow: 0 12px 30px rgb(21 91 91 / 14%);
+}

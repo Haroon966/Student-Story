@@ -1,0 +1,28 @@
+@import 'tailwindcss';
+@import './theme.css';
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  body {
+    @apply min-h-dvh antialiased;
+    background: var(--theme-background);
+    color: var(--theme-charcoal);
+    font-family:
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      Segoe UI,
+      Roboto,
+      Ubuntu,
+      Cantarell,
+      Noto Sans,
+      sans-serif;
+  }
+
+  #root {
+    @apply min-h-dvh;
+  }
+}

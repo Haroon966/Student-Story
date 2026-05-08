@@ -1,0 +1,38 @@
+Student Story — permissive license with attribution
+
+Copyright (c) 2026 Olufsen
+
+Canonical repository (replace if you fork under a new canonical home):
+https://github.com/olufsen/student-story
+
+---
+
+Permission
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to:
+
+• use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and  
+• permit persons to whom the Software is furnished to do so,
+
+subject to the conditions below.
+
+---
+
+Conditions
+
+1. Copyright & license notice  
+   The above copyright notice and this license text shall be included in all copies or substantial portions of the Software or its source.
+
+2. Credit to the author  
+   You must give reasonable, visible credit to **Olufsen** as the original creator of Student Story. For example: include Olufsen in documentation, a credits / “About” section in an app, or package readme—not buried-only in minified code.
+
+3. Reference to this repository  
+   You must include a working reference to the canonical repository URL above (same repository this LICENSE came from, or its successor URL if noted in that repo). Place it next to or alongside the credit—for instance in README, NOTICE, or app credits—so users can find the original source.
+
+These conditions apply to distributions you share publicly or sell. Reasonable compliance is enough; the intent is that Olufsen stays credited and people can still find this project.
+
+---
+
+Disclaimer of warranty
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

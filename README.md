@@ -58,3 +58,9 @@ Classroom teachers, learning-support staff, mentors, and anyone who needs a **pr
 ## In short
 
 **Student Story** helps you honour the narrative of each child: capture honestly, store locally, reflect when you’re ready—and keep the thread of their story in one trustworthy place.
+
+---
+
+## Sharing & building on this project
+
+You are welcome to **use, change, share, and even sell** work derived from Student Story. If you do, please **credit Olufsen** as the original creator and **include a link to this repository** so others can find the source—the full rules are in the [`LICENSE`](LICENSE) file. Replace the GitHub URL there if your canonical fork moves.
