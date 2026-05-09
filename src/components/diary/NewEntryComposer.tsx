@@ -14,6 +14,7 @@ import { createDiaryEntry } from '@/lib/diary'
 import type { MediaKind } from '@/db/database'
 import { useBlobUrl } from '@/hooks/useBlobUrl'
 import { newId } from '@/lib/id'
+import { cn } from '@/lib/utils'
 import { Camera, FileVideo, ImagePlus, Mic, Paperclip, SendHorizontal, Square, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -43,6 +44,8 @@ function resolveEntryBody(mainBody: string, pending: PendingAttachment[]): strin
     (p) => (p.kind === 'image' || p.kind === 'video') && p.caption.trim(),
   )
   if (hasMediaCaption) return ''
+  const onlyAudio = pending.every((p) => p.kind === 'audio')
+  if (onlyAudio) return ''
   return '(attachment)'
 }
 
@@ -57,11 +60,22 @@ function PendingMediaRow({
 }) {
   const url = useBlobUrl(item.blob)
   const showCaptionField = item.kind === 'image' || item.kind === 'video'
+  const isAudio = item.kind === 'audio'
 
   return (
-    <div className="overflow-hidden rounded-xl border border-[var(--theme-border)] bg-[var(--theme-surface)] shadow-sm">
-      <div className="relative min-h-[120px] bg-[var(--theme-surface-muted)]">
-        {!url ? (
+    <div
+      className={cn(
+        'overflow-hidden rounded-xl border border-[var(--theme-border)] shadow-sm',
+        isAudio ? 'bg-transparent' : 'bg-[var(--theme-surface)]',
+      )}
+    >
+      <div
+        className={cn(
+          'relative',
+          isAudio ? 'min-h-0 py-2 pl-2 pr-12' : 'min-h-[120px] bg-[var(--theme-surface-muted)]',
+        )}
+      >
+        {!url && !isAudio ? (
           <div className="h-40 w-full animate-pulse bg-[var(--theme-border)]/40 sm:h-48" aria-hidden />
         ) : null}
         {item.kind === 'image' && url ? (
@@ -71,8 +85,8 @@ function PendingMediaRow({
           <video src={url} controls muted playsInline className="max-h-52 w-full bg-black object-contain sm:max-h-60" />
         ) : null}
         {item.kind === 'audio' && url ? (
-          <div className="px-3 py-3">
-            <audio src={url} controls className="w-full" />
+          <div className="story-audio-bar">
+            <audio src={url} controls preload="metadata" />
           </div>
         ) : null}
 
@@ -114,6 +128,8 @@ export function NewEntryComposer({
   const fileRef = useRef<HTMLInputElement>(null)
   const consumedIngestIds = useRef(new Set<string>())
   const voice = useVoiceRecorder()
+  const [voiceSession, setVoiceSession] = useState(0)
+  const [voiceBusy, setVoiceBusy] = useState(false)
 
   useEffect(() => {
     if (!ingestAttachment) return
@@ -189,7 +205,13 @@ export function NewEntryComposer({
       return
     }
     if (voice.state.status === 'error') voice.resetError()
-    await voice.start()
+    setVoiceBusy(true)
+    try {
+      const started = await voice.start()
+      if (started) setVoiceSession((s) => s + 1)
+    } finally {
+      setVoiceBusy(false)
+    }
   }
 
   function onFiles(files: FileList | null) {
@@ -227,20 +249,38 @@ export function NewEntryComposer({
 
         {recording ? (
           <div
-            className="flex items-center gap-3 rounded-xl border border-[var(--theme-primary)]/30 bg-[var(--theme-primary-soft)] px-3 py-3"
+            className="relative overflow-hidden rounded-xl border border-[var(--theme-primary)]/35 bg-[var(--theme-primary-soft)] shadow-[var(--shadow-xs)]"
             role="status"
             aria-live="polite"
+            aria-label="Recording voice note"
           >
-            <div className="flex h-12 flex-1 items-end justify-center gap-1 px-1">
-              {voice.waveLevels.map((level, i) => (
-                <span
-                  key={i}
-                  className="w-[3px] rounded-full bg-[var(--theme-primary)] transition-[height] duration-75"
-                  style={{ height: `${Math.max(4, 5 + level * 40)}px` }}
-                />
-              ))}
+            <div
+              className="pointer-events-none absolute inset-y-0 -left-[45%] w-[45%] bg-gradient-to-r from-transparent via-[var(--theme-primary)]/22 to-transparent story-voice-recording__sweep"
+              aria-hidden
+            />
+            <div
+              key={voiceSession}
+              className="story-voice-recording__slide-in relative flex items-center gap-3 px-3 py-3"
+            >
+              <div className="flex h-12 min-w-0 flex-1 items-end justify-center gap-1 px-1">
+                {voice.waveLevels.map((level, i) => (
+                  <span
+                    key={i}
+                    className="w-[3px] shrink-0 rounded-full bg-[var(--theme-primary)] transition-[height] duration-75"
+                    style={{ height: `${Math.max(4, 5 + level * 40)}px` }}
+                  />
+                ))}
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                <span className="relative flex h-2 w-2" aria-hidden>
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--theme-danger)] opacity-40" />
+                  <span className="relative inline-flex size-2 rounded-full bg-[var(--theme-danger)]" />
+                </span>
+                <span className="text-[12px] font-semibold tracking-wide text-[var(--theme-charcoal)]">
+                  Recording
+                </span>
+              </div>
             </div>
-            <span className="shrink-0 text-[12px] font-medium text-[var(--theme-charcoal-muted)]">Recording…</span>
           </div>
         ) : null}
 
@@ -326,12 +366,14 @@ export function NewEntryComposer({
             ) : (
               <button
                 type="button"
-                className={[
-                  'inline-flex size-12 items-center justify-center rounded-full shadow-[0_2px_8px_rgb(21_91_91_/_0.35)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-ring)] focus-visible:ring-offset-2',
+                disabled={voiceBusy}
+                aria-busy={voiceBusy || undefined}
+                className={cn(
+                  'inline-flex size-12 items-center justify-center rounded-full shadow-[0_2px_8px_rgb(21_91_91_/_0.35)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-ring)] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-60',
                   recording
                     ? 'bg-[var(--theme-danger)] text-white hover:bg-[var(--theme-danger-hover)]'
                     : 'bg-[var(--theme-primary)] text-[var(--theme-primary-foreground)] hover:bg-[var(--theme-primary-hover)]',
-                ].join(' ')}
+                )}
                 aria-label={recording ? 'Stop recording' : 'Record voice note'}
                 onClick={() => void toggleVoice()}
               >

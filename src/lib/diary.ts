@@ -80,7 +80,14 @@ export async function getLastDiaryPreview(
   }
   const media = await listMediaForEntry(last.id)
   const cap = media.map((m) => m.caption?.trim()).filter(Boolean)[0]
-  const snippet =
-    cap && cap.length > 72 ? `${cap.slice(0, 72).trimEnd()}…` : cap || '(attachment)'
+  if (cap) {
+    const snippet = cap.length > 72 ? `${cap.slice(0, 72).trimEnd()}…` : cap
+    return { snippet, at: last.createdAt }
+  }
+  const onlyAudio = media.length > 0 && media.every((m) => m.kind === 'audio')
+  if (onlyAudio) {
+    return { snippet: 'Voice note', at: last.createdAt }
+  }
+  const snippet = '(attachment)'
   return { snippet, at: last.createdAt }
 }

@@ -25,7 +25,7 @@ async function fetchDiaryBundle(studentId: string) {
 }
 
 type LocationCameraState = {
-  storyCameraCapture?: { ingestId: string; mimeType: string; blob: Blob }
+  storyCameraCapture?: { ingestId: string; mimeType: string; blob: Blob; kind?: 'image' | 'video' }
 }
 
 export function StudentPage() {
@@ -99,7 +99,8 @@ export function StudentPage() {
     const cap = (location.state as LocationCameraState | null)?.storyCameraCapture
     if (!cap) return
     startTransition(() => {
-      setCameraIngest({ ingestId: cap.ingestId, kind: 'image', mimeType: cap.mimeType, blob: cap.blob })
+      const kind = cap.kind === 'video' ? 'video' : 'image'
+      setCameraIngest({ ingestId: cap.ingestId, kind, mimeType: cap.mimeType, blob: cap.blob })
     })
     navigate(`/student/${id}`, { replace: true, state: {} })
   }, [id, location.state, navigate])

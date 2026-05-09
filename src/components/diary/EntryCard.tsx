@@ -17,6 +17,7 @@ import { deleteDiaryEntry } from '@/lib/diary'
 import { formatEntrySavedAt } from '@/lib/formatChatTime'
 import { Button } from '@/components/ui/button'
 import { useBlobUrl } from '@/hooks/useBlobUrl'
+import { cn } from '@/lib/utils'
 import { AlertTriangle, MoreHorizontal } from 'lucide-react'
 import { useState } from 'react'
 
@@ -55,7 +56,11 @@ function MediaPreview({ media }: { media: DiaryMedia }) {
     )
   }
 
-  return <audio src={url} controls className="w-full" />
+  return (
+    <div className="story-audio-bar">
+      <audio src={url} controls preload="metadata" />
+    </div>
+  )
 }
 
 type Props = {
@@ -82,32 +87,44 @@ export function EntryCard({ entry, media, onRemoved }: Props) {
 
   const savedLabel = formatEntrySavedAt(entry.createdAt)
 
+  const hasBody = Boolean(entry.body.trim())
+  const allAudio = media.length > 0 && media.every((m) => m.kind === 'audio')
+  const isVoiceOnlyCard = allAudio && !hasBody
+
+  const bubbleChrome = !isVoiceOnlyCard
+    ? {
+        borderRadius: 'var(--radius-2xl)',
+        borderTopRightRadius: 'var(--radius-xs)',
+        background: 'var(--theme-bubble-out)',
+        border: '1px solid var(--theme-border)',
+        borderLeft: '3px solid rgb(21 91 91 / 0.22)',
+        boxShadow: 'var(--shadow-xs)',
+      }
+    : undefined
+
   return (
     <>
       <div className="flex justify-end">
-        <div
-          className="w-[min(92%,560px)] overflow-hidden"
-          style={{
-            borderRadius: 'var(--radius-2xl)',
-            borderTopRightRadius: 'var(--radius-xs)',
-            background: 'var(--theme-bubble-out)',
-            border: '1px solid var(--theme-border)',
-            borderLeft: '3px solid rgb(21 91 91 / 0.22)',
-            boxShadow: 'var(--shadow-xs)',
-          }}
-        >
+        <div className={cn('w-[min(92%,560px)] overflow-hidden', isVoiceOnlyCard && 'bg-transparent')} style={bubbleChrome}>
           {/* Body + menu row */}
-          <div className="flex items-start gap-1 px-3 pt-2.5">
-            <div className="min-w-0 flex-1">
-              {entry.body.trim() ? (
-                <div
-                  className="whitespace-pre-wrap break-words"
-                  style={{ fontSize: 'var(--text-base)', lineHeight: 'var(--leading-body)', color: 'var(--theme-charcoal)' }}
-                >
-                  {entry.body}
-                </div>
-              ) : null}
-            </div>
+          <div
+            className={cn(
+              'flex items-start gap-1',
+              isVoiceOnlyCard ? 'justify-end pt-0' : 'px-3 pt-2.5',
+            )}
+          >
+            {!isVoiceOnlyCard ? (
+              <div className="min-w-0 flex-1">
+                {hasBody ? (
+                  <div
+                    className="whitespace-pre-wrap break-words"
+                    style={{ fontSize: 'var(--text-base)', lineHeight: 'var(--leading-body)', color: 'var(--theme-charcoal)' }}
+                  >
+                    {entry.body}
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -131,7 +148,12 @@ export function EntryCard({ entry, media, onRemoved }: Props) {
 
           {/* Media attachments */}
           {media.length ? (
-            <div className="mt-2 space-y-2.5 px-3">
+            <div
+              className={cn(
+                'space-y-2.5',
+                isVoiceOnlyCard ? 'mt-1 w-full' : 'mt-2 px-3',
+              )}
+            >
               {media.map((m) => (
                 <div key={m.id} className="space-y-1.5">
                   <MediaPreview media={m} />
@@ -150,23 +172,40 @@ export function EntryCard({ entry, media, onRemoved }: Props) {
                   ) : null}
                 </div>
               ))}
+              {isVoiceOnlyCard ? (
+                <div className="flex justify-end pr-0.5 pt-0.5">
+                  <time
+                    dateTime={new Date(entry.createdAt).toISOString()}
+                    style={{
+                      fontSize: 'var(--text-xs)',
+                      letterSpacing: 'var(--tracking-wide)',
+                      color: 'var(--theme-bubble-meta)',
+                      lineHeight: 'var(--leading-snug)',
+                    }}
+                  >
+                    Saved · {savedLabel}
+                  </time>
+                </div>
+              ) : null}
             </div>
           ) : null}
 
           {/* Timestamp */}
-          <div className="flex justify-end px-3 pb-2 pt-1.5">
-            <time
-              dateTime={new Date(entry.createdAt).toISOString()}
-              style={{
-                fontSize: 'var(--text-xs)',
-                letterSpacing: 'var(--tracking-wide)',
-                color: 'var(--theme-bubble-meta)',
-                lineHeight: 'var(--leading-snug)',
-              }}
-            >
-              Saved · {savedLabel}
-            </time>
-          </div>
+          {!isVoiceOnlyCard ? (
+            <div className="flex justify-end px-3 pb-2 pt-1.5">
+              <time
+                dateTime={new Date(entry.createdAt).toISOString()}
+                style={{
+                  fontSize: 'var(--text-xs)',
+                  letterSpacing: 'var(--tracking-wide)',
+                  color: 'var(--theme-bubble-meta)',
+                  lineHeight: 'var(--leading-snug)',
+                }}
+              >
+                Saved · {savedLabel}
+              </time>
+            </div>
+          ) : null}
         </div>
       </div>
 

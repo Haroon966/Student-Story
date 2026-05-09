@@ -109,10 +109,10 @@ export function useVoiceRecorder() {
     })
   }, [stopAnalyser, stopTracks])
 
-  const start = useCallback(async () => {
+  const start = useCallback(async (): Promise<boolean> => {
     if (!navigator.mediaDevices?.getUserMedia) {
       setState({ status: 'error', message: 'Microphone is not available in this browser.' })
-      return
+      return false
     }
 
     try {
@@ -131,10 +131,12 @@ export function useVoiceRecorder() {
       recorderRef.current = rec
       rec.start()
       setState({ status: 'recording', mimeType: rec.mimeType || mimeType || 'audio/webm' })
+      return true
     } catch {
       stopAnalyser()
       stopTracks()
       setState({ status: 'error', message: 'Microphone permission was denied or unavailable.' })
+      return false
     }
   }, [startAnalyser, stopAnalyser, stopTracks])
 

@@ -35,3 +35,47 @@
     box-shadow: 0 0 0 2px var(--theme-ring);
   }
 }
+
+/* Student story composer — voice recording “tape” sweep (left → right) */
+@keyframes story-voice-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}
+
+.story-voice-recording__sweep {
+  animation: story-voice-sweep 2.1s linear infinite;
+}
+
+@keyframes story-voice-slide-in {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.story-voice-recording__slide-in {
+  animation: story-voice-slide-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Story timeline / composer — native audio control on a white bar */
+.story-audio-bar {
+  width: 100%;
+  border-radius: var(--radius-md);
+  background: var(--theme-white);
+  border: 1px solid var(--theme-border);
+  box-shadow: var(--shadow-xs);
+  padding: 6px 10px;
+}
+
+.story-audio-bar audio {
+  display: block;
+  width: 100%;
+  background-color: var(--theme-white);
+  border-radius: var(--radius-sm);
+}

@@ -4,7 +4,6 @@
   "short_name": "Student Story",
   "description": "Offline student stories for teachers — profiles and logs with notes, voice, photos, and video.",
   "theme_color": "#155b5b",
-  "background_color": "#f6f8f7",
   "display": "standalone",
   "orientation": "portrait-primary",
   "icons": [

@@ -7,9 +7,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Camera } from 'lucide-react'
+import { Camera, SwitchCamera } from 'lucide-react'
 import { useCallback, useRef, useState } from 'react'
 import Webcam from 'react-webcam'
+
+type FacingMode = 'user' | 'environment'
 
 type Props = {
   open: boolean
@@ -20,6 +22,7 @@ type Props = {
 export function WebcamCaptureDialog({ open, onOpenChange, onCapture }: Props) {
   const webcamRef = useRef<Webcam>(null)
   const [ready, setReady] = useState(false)
+  const [facingMode, setFacingMode] = useState<FacingMode>('user')
 
   const capture = useCallback(() => {
     const shot = webcamRef.current?.getScreenshot()
@@ -32,6 +35,11 @@ export function WebcamCaptureDialog({ open, onOpenChange, onCapture }: Props) {
       })
       .catch(() => {})
   }, [onCapture, onOpenChange])
+
+  const flipCamera = useCallback(() => {
+    setReady(false)
+    setFacingMode((m) => (m === 'user' ? 'environment' : 'user'))
+  }, [])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -46,16 +54,34 @@ export function WebcamCaptureDialog({ open, onOpenChange, onCapture }: Props) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="overflow-hidden rounded-lg border border-[var(--theme-border-strong)] bg-black">
+        <div className="relative overflow-hidden rounded-lg border border-[var(--theme-border-strong)] bg-black">
           <Webcam
+            key={facingMode}
             ref={webcamRef}
             audio={false}
+            mirrored={facingMode === 'user'}
             screenshotFormat="image/jpeg"
-            videoConstraints={{ facingMode: 'user' }}
+            screenshotQuality={0.93}
+            forceScreenshotSourceSize
+            imageSmoothing
+            disablePictureInPicture
+            videoConstraints={{ facingMode }}
             onUserMedia={() => setReady(true)}
             onUserMediaError={() => setReady(false)}
             className="aspect-video w-full object-cover"
           />
+          <div className="absolute bottom-2 right-2 flex gap-2">
+            <Button
+              type="button"
+              size="icon"
+              variant="secondary"
+              className="size-10 rounded-full bg-black/55 text-white shadow-md backdrop-blur-sm hover:bg-black/70"
+              aria-label={facingMode === 'user' ? 'Switch to back camera' : 'Switch to front camera'}
+              onClick={flipCamera}
+            >
+              <SwitchCamera className="size-5" aria-hidden />
+            </Button>
+          </div>
         </div>
 
         <DialogFooter className="gap-2 sm:justify-between">
