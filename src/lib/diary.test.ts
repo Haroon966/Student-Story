@@ -1,6 +1,7 @@
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { db } from '@/db/database'
 import type { DiaryEntry, DiaryMedia } from '@/db/database'
-import { entryMatchesDiarySearch } from '@/lib/diary'
+import { appendTranscriptToDiaryMediaCaption, entryMatchesDiarySearch } from '@/lib/diary'
 
 const entry = (body: string): DiaryEntry => ({
   id: 'e1',
@@ -18,6 +19,58 @@ const imageWithCaption = (caption: string): DiaryMedia => ({
   blob: new Blob(),
   caption,
   createdAt: 1,
+})
+
+describe('appendTranscriptToDiaryMediaCaption', () => {
+  beforeEach(async () => {
+    await db.delete()
+    await db.open()
+  })
+
+  it('writes transcript as caption on audio row', async () => {
+    await db.diaryEntries.put({
+      id: 'e1',
+      studentId: 's1',
+      body: '',
+      createdAt: 100,
+      updatedAt: 100,
+    })
+    await db.diaryMedia.put({
+      id: 'm1',
+      entryId: 'e1',
+      kind: 'audio',
+      mimeType: 'audio/webm',
+      blob: new Blob([new Uint8Array([1, 2, 3])]),
+      createdAt: 100,
+    })
+    await appendTranscriptToDiaryMediaCaption('m1', 'Meeting recap.')
+    const m = await db.diaryMedia.get('m1')
+    expect(m?.caption).toBe('Meeting recap.')
+    const e = await db.diaryEntries.get('e1')
+    expect(e?.updatedAt).toBeGreaterThanOrEqual(100)
+  })
+
+  it('appends second transcript with newline', async () => {
+    await db.diaryEntries.put({
+      id: 'e1',
+      studentId: 's1',
+      body: '',
+      createdAt: 1,
+      updatedAt: 1,
+    })
+    await db.diaryMedia.put({
+      id: 'm1',
+      entryId: 'e1',
+      kind: 'audio',
+      mimeType: 'audio/webm',
+      blob: new Blob(),
+      caption: 'First line',
+      createdAt: 1,
+    })
+    await appendTranscriptToDiaryMediaCaption('m1', 'Second line')
+    const m = await db.diaryMedia.get('m1')
+    expect(m?.caption).toBe('First line\nSecond line')
+  })
 })
 
 describe('entryMatchesDiarySearch', () => {

@@ -28,7 +28,7 @@ export interface DiaryMedia {
   kind: MediaKind
   mimeType: string
   blob: Blob
-  /** Optional caption shown under image/video (and stored with the attachment). */
+  /** Optional caption shown under image/video/audio (stored with the attachment). */
   caption?: string
   createdAt: number
 }

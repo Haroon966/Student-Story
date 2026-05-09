@@ -1,4 +1,5 @@
 import { db, type DiaryEntry, type DiaryMedia, type MediaKind } from '@/db/database'
+import { mergeTranscriptIntoBody } from '@/lib/speech/mergeTranscriptIntoBody'
 import { newId } from '@/lib/id'
 
 export type NewMediaInput = {
@@ -56,6 +57,21 @@ export async function listEntriesForStudent(studentId: string): Promise<DiaryEnt
 
 export async function listMediaForEntry(entryId: string): Promise<DiaryMedia[]> {
   return db.diaryMedia.where('entryId').equals(entryId).sortBy('createdAt')
+}
+
+/** Merge transcribed text into a saved audio attachment’s caption and bump the parent entry timestamp. */
+export async function appendTranscriptToDiaryMediaCaption(mediaId: string, transcript: string): Promise<void> {
+  const row = await db.diaryMedia.get(mediaId)
+  if (!row) throw new Error('Attachment not found.')
+  const merged = mergeTranscriptIntoBody(row.caption ?? '', transcript).trim()
+  if (!merged) return
+
+  const now = Date.now()
+  await db.transaction('rw', db.diaryMedia, db.diaryEntries, async () => {
+    await db.diaryMedia.put({ ...row, caption: merged })
+    const entry = await db.diaryEntries.get(row.entryId)
+    if (entry) await db.diaryEntries.update(row.entryId, { updatedAt: now })
+  })
 }
 
 /** Case-insensitive match on entry body or any attachment caption (empty needle matches all). */

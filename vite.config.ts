@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { cpSync, existsSync, mkdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
@@ -7,6 +7,25 @@ import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 const rootDir = fileURLToPath(new URL('.', import.meta.url))
+
+const ONNX_WASM_FILES = [
+  'ort-wasm.wasm',
+  'ort-wasm-simd.wasm',
+  'ort-wasm-threaded.wasm',
+  'ort-wasm-simd-threaded.wasm',
+] as const
+
+/** ONNX Runtime loads .wasm next to the bundle; Vite does not emit them unless we copy from node_modules. */
+function copyOnnxWasmFiles(): void {
+  const srcDir = path.join(rootDir, 'node_modules/onnxruntime-web/dist')
+  const destDir = path.join(rootDir, 'public/onnx')
+  if (!existsSync(srcDir)) return
+  mkdirSync(destDir, { recursive: true })
+  for (const f of ONNX_WASM_FILES) {
+    const from = path.join(srcDir, f)
+    if (existsSync(from)) cpSync(from, path.join(destDir, f))
+  }
+}
 
 /** GitHub Pages project sites use `/repo-name/`; user/org pages (`*.github.io`) use `/`. Set `VITE_BASE_PATH` in CI or `.env`. */
 function normalizeAppBase(): string {
@@ -36,6 +55,8 @@ export default defineConfig({
           if (id.includes('node_modules/date-fns')) return 'vendor-date-fns'
           if (id.includes('node_modules/@radix-ui')) return 'vendor-radix'
           if (id.includes('node_modules/lucide-react')) return 'vendor-icons'
+          if (id.includes('node_modules/@xenova/transformers')) return 'vendor-transformers'
+          if (id.includes('node_modules/onnxruntime-web')) return 'vendor-onnxruntime'
         },
       },
     },
@@ -43,6 +64,15 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    {
+      name: 'copy-onnx-wasm',
+      buildStart() {
+        copyOnnxWasmFiles()
+      },
+      configureServer() {
+        copyOnnxWasmFiles()
+      },
+    },
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['Student-Story-logo.png', 'Student-Story-logo-192.png', 'Student-Story-logo-512.png'],
@@ -52,6 +82,7 @@ export default defineConfig({
         scope: base,
       },
       workbox: {
+        /** WASM is ~10MB each; skip precache (2MB Workbox default). Served from `/onnx/` at runtime. */
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
       },
       /** Without this, no service worker in `npm run dev` → no install prompt on localhost. */

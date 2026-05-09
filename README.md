@@ -60,6 +60,8 @@ Every entry can mix **text** with richer kinds of memory:
 | **Photos & Video** | 📸 | Evidence of work, environment, or milestones you might want to revisit later |
 | **Captions** | 💬 | Add context under images or clips so future-you knows *why* something mattered |
 
+After you **finish** a voice note, the app runs **speech-to-text in the browser** (Whisper via [Transformers.js](https://huggingface.co/docs/transformers.js)) and saves the transcript as that clip’s **description** (caption). On **saved** entries, tap **Transcribe** under the player to append more text to the same caption. The **first** transcription downloads model weights over the network (on the order of tens of MB); **Safari / Firefox / older devices** may be slower or fail, in which case the audio note still saves.
+
 > The layout feels familiar — like a **conversation with yourself** about that student — so adding something small doesn't feel like "doing paperwork."
 
 ---
@@ -165,6 +167,8 @@ npm install
 # Run the app
 npm start
 ```
+
+> **Install note:** `@xenova/transformers` lists `sharp` as a dependency for Node-side tooling. If `npm install` fails building native code on your machine, use `npm install --ignore-scripts`; the browser app does not need `sharp` at runtime.
 
 > 📌 Replace `YOUR_USERNAME` with your GitHub handle.
 

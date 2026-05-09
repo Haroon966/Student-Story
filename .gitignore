@@ -21,6 +21,9 @@ dist-ssr
 # Test / coverage
 coverage
 
+# Generated ONNX WASM copies (from `node_modules/onnxruntime-web/dist` via Vite `copy-onnx-wasm`)
+public/onnx/*.wasm
+
 # Caches
 .cache
 .parcel-cache

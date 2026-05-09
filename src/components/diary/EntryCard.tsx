@@ -13,12 +13,14 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import type { DiaryEntry, DiaryMedia } from '@/db/database'
-import { deleteDiaryEntry } from '@/lib/diary'
+import { appendTranscriptToDiaryMediaCaption, deleteDiaryEntry } from '@/lib/diary'
+import { toast } from '@/hooks/use-toast'
+import { transcribeAudioBlob } from '@/lib/speech/transcribe'
 import { formatEntrySavedAt } from '@/lib/formatChatTime'
 import { Button } from '@/components/ui/button'
 import { useBlobUrl } from '@/hooks/useBlobUrl'
 import { cn } from '@/lib/utils'
-import { AlertTriangle, MoreHorizontal } from 'lucide-react'
+import { AlertTriangle, Captions, MoreHorizontal } from 'lucide-react'
 import { useState } from 'react'
 
 function MediaPreview({ media }: { media: DiaryMedia }) {
@@ -63,13 +65,104 @@ function MediaPreview({ media }: { media: DiaryMedia }) {
   )
 }
 
+function EntryAudioRow({
+  media,
+  onTranscribed,
+}: {
+  media: DiaryMedia
+  onTranscribed: () => void
+}) {
+  const url = useBlobUrl(media.blob)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  async function transcribe() {
+    if (busy || !media.blob.size) return
+    setBusy(true)
+    setError(null)
+    try {
+      const text = await transcribeAudioBlob(media.blob)
+      await appendTranscriptToDiaryMediaCaption(media.id, text)
+      onTranscribed()
+      if (text.trim()) {
+        toast({
+          title: 'Transcription saved',
+          description: 'Added to this clip’s description.',
+        })
+      } else {
+        toast({
+          title: 'No speech detected',
+          description: 'Try again with clearer audio.',
+        })
+      }
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Transcription failed.'
+      setError(msg)
+      toast({
+        variant: 'destructive',
+        title: 'Transcription failed',
+        description: msg,
+      })
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <div className="space-y-1.5">
+      {!url ? (
+        <div
+          className="w-full animate-pulse"
+          style={{ height: '72px', borderRadius: 'var(--radius-md)', background: 'var(--theme-surface-muted)' }}
+          aria-hidden
+        />
+      ) : (
+        <div className="story-audio-bar">
+          <audio src={url} controls preload="metadata" />
+        </div>
+      )}
+      {media.caption?.trim() ? (
+        <p
+          className="break-words px-0.5"
+          style={{
+            fontSize: 'var(--text-sm)',
+            fontStyle: 'italic',
+            color: 'var(--theme-charcoal-muted)',
+            lineHeight: 'var(--leading-snug)',
+          }}
+        >
+          {media.caption.trim()}
+        </p>
+      ) : null}
+      <div className="flex flex-wrap items-center gap-2 px-0.5">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="h-8 gap-1.5 rounded-full border-[var(--theme-border)] px-3 text-[12px] text-[var(--theme-charcoal)]"
+          disabled={busy || !media.blob.size}
+          aria-busy={busy || undefined}
+          onClick={() => void transcribe()}
+        >
+          <Captions className="size-3.5 shrink-0" aria-hidden />
+          {busy ? 'Transcribing…' : 'Transcribe'}
+        </Button>
+        {error ? (
+          <p className="min-w-0 flex-1 text-[12px] text-[var(--theme-danger)]">{error}</p>
+        ) : null}
+      </div>
+    </div>
+  )
+}
+
 type Props = {
   entry: DiaryEntry
   media: DiaryMedia[]
   onRemoved: () => void
+  onMediaUpdated?: () => void
 }
 
-export function EntryCard({ entry, media, onRemoved }: Props) {
+export function EntryCard({ entry, media, onRemoved, onMediaUpdated }: Props) {
   const [busy,  setBusy]  = useState(false)
   const [deleteWarningOpen, setDeleteWarningOpen] = useState(false)
 
@@ -80,6 +173,10 @@ export function EntryCard({ entry, media, onRemoved }: Props) {
       await deleteDiaryEntry(entry.id)
       setDeleteWarningOpen(false)
       onRemoved()
+      toast({
+        title: 'Entry removed',
+        description: 'This story entry was deleted from this device.',
+      })
     } finally {
       setBusy(false)
     }
@@ -154,24 +251,28 @@ export function EntryCard({ entry, media, onRemoved }: Props) {
                 isVoiceOnlyCard ? 'mt-1 w-full' : 'mt-2 px-3',
               )}
             >
-              {media.map((m) => (
-                <div key={m.id} className="space-y-1.5">
-                  <MediaPreview media={m} />
-                  {m.caption?.trim() ? (
-                    <p
-                      className="break-words px-0.5"
-                      style={{
-                        fontSize: 'var(--text-sm)',
-                        fontStyle: 'italic',
-                        color: 'var(--theme-charcoal-muted)',
-                        lineHeight: 'var(--leading-snug)',
-                      }}
-                    >
-                      {m.caption.trim()}
-                    </p>
-                  ) : null}
-                </div>
-              ))}
+              {media.map((m) =>
+                m.kind === 'audio' ? (
+                  <EntryAudioRow key={m.id} media={m} onTranscribed={() => onMediaUpdated?.()} />
+                ) : (
+                  <div key={m.id} className="space-y-1.5">
+                    <MediaPreview media={m} />
+                    {m.caption?.trim() ? (
+                      <p
+                        className="break-words px-0.5"
+                        style={{
+                          fontSize: 'var(--text-sm)',
+                          fontStyle: 'italic',
+                          color: 'var(--theme-charcoal-muted)',
+                          lineHeight: 'var(--leading-snug)',
+                        }}
+                      >
+                        {m.caption.trim()}
+                      </p>
+                    ) : null}
+                  </div>
+                ),
+              )}
               {isVoiceOnlyCard ? (
                 <div className="flex justify-end pr-0.5 pt-0.5">
                   <time

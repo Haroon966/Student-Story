@@ -11,6 +11,10 @@ import { Textarea } from '@/components/ui/textarea'
 import { useVoiceRecorder } from '@/hooks/useVoiceRecorder'
 import type { NewMediaInput } from '@/lib/diary'
 import { createDiaryEntry } from '@/lib/diary'
+import { resolveComposerEntryBody } from '@/lib/diaryComposer'
+import { toast } from '@/hooks/use-toast'
+import { mergeTranscriptIntoBody } from '@/lib/speech/mergeTranscriptIntoBody'
+import { transcribeAudioBlob } from '@/lib/speech/transcribe'
 import type { MediaKind } from '@/db/database'
 import { useBlobUrl } from '@/hooks/useBlobUrl'
 import { newId } from '@/lib/id'
@@ -34,19 +38,6 @@ type Props = {
   onSaved: () => void
   ingestAttachment?: StoryIngestAttachment | null
   onIngestAttachmentConsumed?: () => void
-}
-
-function resolveEntryBody(mainBody: string, pending: PendingAttachment[]): string {
-  const t = mainBody.trim()
-  if (t) return t
-  if (!pending.length) return ''
-  const hasMediaCaption = pending.some(
-    (p) => (p.kind === 'image' || p.kind === 'video') && p.caption.trim(),
-  )
-  if (hasMediaCaption) return ''
-  const onlyAudio = pending.every((p) => p.kind === 'audio')
-  if (onlyAudio) return ''
-  return '(attachment)'
 }
 
 function PendingMediaRow({
@@ -100,6 +91,14 @@ function PendingMediaRow({
         </button>
       </div>
 
+      {item.kind === 'audio' && item.caption.trim() ? (
+        <div className="px-2 pb-2 pt-0 pr-12">
+          <p className="break-words text-[13px] italic leading-snug text-[var(--theme-charcoal-muted)]">
+            {item.caption.trim()}
+          </p>
+        </div>
+      ) : null}
+
       {showCaptionField ? (
         <div className="border-t border-[var(--theme-border)] p-2">
           <Input
@@ -130,6 +129,16 @@ export function NewEntryComposer({
   const voice = useVoiceRecorder()
   const [voiceSession, setVoiceSession] = useState(0)
   const [voiceBusy, setVoiceBusy] = useState(false)
+  const [transcribingNote, setTranscribingNote] = useState(false)
+  const [transcriptionError, setTranscriptionError] = useState<string | null>(null)
+  const transcriptionSessionRef = useRef(0)
+  const transcriptionInFlightRef = useRef(0)
+
+  useEffect(() => {
+    return () => {
+      transcriptionSessionRef.current += 1
+    }
+  }, [])
 
   useEffect(() => {
     if (!ingestAttachment) return
@@ -148,17 +157,19 @@ export function NewEntryComposer({
     onIngestAttachmentConsumed?.()
   }, [ingestAttachment, onIngestAttachmentConsumed])
 
-  function addPending(input: NewMediaInput) {
+  function addPending(input: NewMediaInput): string {
+    const localId = newId()
     setPending((p) => [
       ...p,
       {
-        localId: newId(),
+        localId,
         kind: input.kind,
         mimeType: input.mimeType,
         blob: input.blob,
         caption: input.caption?.trim() ?? '',
       },
     ])
+    return localId
   }
 
   function updateCaption(localId: string, caption: string) {
@@ -170,7 +181,7 @@ export function NewEntryComposer({
   }
 
   async function submit() {
-    const entryBody = resolveEntryBody(body, pending)
+    const entryBody = resolveComposerEntryBody(body, pending)
     if ((!entryBody && pending.length === 0) || busy) return
     setBusy(true)
     try {
@@ -187,8 +198,65 @@ export function NewEntryComposer({
       setBody('')
       setPending([])
       onSaved()
+      toast({
+        title: 'Saved',
+        description: 'Your story entry was saved on this device.',
+      })
+    } catch {
+      toast({
+        variant: 'destructive',
+        title: "Couldn't save",
+        description: 'Something went wrong saving this entry. Try again.',
+      })
     } finally {
       setBusy(false)
+    }
+  }
+
+  async function transcribeVoiceNote(blob: Blob, audioLocalId: string) {
+    const session = transcriptionSessionRef.current
+    transcriptionInFlightRef.current += 1
+    setTranscribingNote(true)
+    setTranscriptionError(null)
+    try {
+      const text = await transcribeAudioBlob(blob)
+      if (session !== transcriptionSessionRef.current) return
+      setPending((p) =>
+        p.some((x) => x.localId === audioLocalId)
+          ? p.map((x) =>
+              x.localId === audioLocalId
+                ? { ...x, caption: mergeTranscriptIntoBody(x.caption, text).trim() }
+                : x,
+            )
+          : p,
+      )
+      const trimmed = text.trim()
+      if (trimmed) {
+        toast({
+          title: 'Transcription added',
+          description: 'Text was saved to your voice note description.',
+        })
+      } else {
+        toast({
+          title: 'No speech detected',
+          description: 'Try speaking closer to the mic or record again.',
+        })
+      }
+    } catch (e) {
+      if (session !== transcriptionSessionRef.current) return
+      const msg = e instanceof Error ? e.message : 'Transcription failed.'
+      setTranscriptionError(msg)
+      toast({
+        variant: 'destructive',
+        title: 'Transcription failed',
+        description: msg,
+      })
+    } finally {
+      transcriptionInFlightRef.current -= 1
+      if (transcriptionInFlightRef.current <= 0) {
+        transcriptionInFlightRef.current = 0
+        if (session === transcriptionSessionRef.current) setTranscribingNote(false)
+      }
     }
   }
 
@@ -196,15 +264,17 @@ export function NewEntryComposer({
     if (voice.state.status === 'recording') {
       const blob = await voice.stop()
       if (blob) {
-        addPending({
+        const audioLocalId = addPending({
           kind: 'audio',
           mimeType: blob.type || 'audio/webm',
           blob,
         })
+        void transcribeVoiceNote(blob, audioLocalId)
       }
       return
     }
     if (voice.state.status === 'error') voice.resetError()
+    setTranscriptionError(null)
     setVoiceBusy(true)
     try {
       const started = await voice.start()
@@ -245,6 +315,16 @@ export function NewEntryComposer({
       <div className="mx-auto flex max-w-[880px] flex-col gap-2">
         {voice.state.status === 'error' ? (
           <p className="text-[12px] text-[var(--theme-danger)]">{voice.state.message}</p>
+        ) : null}
+
+        {transcribingNote ? (
+          <p className="text-[12px] text-[var(--theme-charcoal-muted)]" role="status" aria-live="polite">
+            Transcribing voice note…
+          </p>
+        ) : null}
+
+        {transcriptionError ? (
+          <p className="text-[12px] text-[var(--theme-danger)]">{transcriptionError}</p>
         ) : null}
 
         {recording ? (

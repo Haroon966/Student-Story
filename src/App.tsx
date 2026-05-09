@@ -1,4 +1,5 @@
 import { AppShell } from '@/components/layout/AppShell'
+import { Toaster } from '@/components/ui/toaster'
 import { lazy } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 
@@ -26,6 +27,7 @@ function routerBasename(): string | undefined {
 export default function App() {
   return (
     <BrowserRouter basename={routerBasename()}>
+      <Toaster />
       <Routes>
         <Route element={<AppShell />}>
           <Route index element={<HomePage />} />

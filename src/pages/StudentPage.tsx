@@ -290,6 +290,7 @@ export function StudentPage() {
                   entry={item.entry}
                   media={mediaMap[item.entry.id] ?? []}
                   onRemoved={() => void reloadEntries()}
+                  onMediaUpdated={() => void reloadEntries()}
                 />
               ),
             )}
