@@ -213,9 +213,11 @@ Contributions, issues, and feature requests are welcome!
 
 <div align="center">
 
-[![Issues](https://img.shields.io/github/issues/YOUR_USERNAME/student-story?style=for-the-badge&color=red)](https://github.com/YOUR_USERNAME/student-story/issues)
-[![Pull Requests](https://img.shields.io/github/issues-pr/YOUR_USERNAME/student-story?style=for-the-badge&color=blue)](https://github.com/YOUR_USERNAME/student-story/pulls)
-[![Stars](https://img.shields.io/github/stars/YOUR_USERNAME/student-story?style=for-the-badge&color=yellow)](https://github.com/YOUR_USERNAME/student-story/stargazers)
+[![Issues](https://img.shields.io/github/issues/Haroon966/Student-Story?style=for-the-badge&color=red)](https://github.com/Haroon966/Student-Story/issues)
+[![Pull Requests](https://img.shields.io/github/issues-pr/Haroon966/Student-Story?style=for-the-badge&color=blue)](https://github.com/Haroon966/Student-Story/pulls)
+[![Stars](https://img.shields.io/github/stars/Haroon966/Student-Story?style=for-the-badge&color=yellow)](https://github.com/Haroon966/Student-Story/stargazers)
+
+</div>
 
 </div>
 
