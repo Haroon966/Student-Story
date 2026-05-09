@@ -58,6 +58,14 @@ export async function listMediaForEntry(entryId: string): Promise<DiaryMedia[]> 
   return db.diaryMedia.where('entryId').equals(entryId).sortBy('createdAt')
 }
 
+/** Case-insensitive match on entry body or any attachment caption (empty needle matches all). */
+export function entryMatchesDiarySearch(entry: DiaryEntry, media: DiaryMedia[], needle: string): boolean {
+  const n = needle.trim().toLowerCase()
+  if (!n) return true
+  if (entry.body.toLowerCase().includes(n)) return true
+  return media.some((m) => (m.caption ?? '').toLowerCase().includes(n))
+}
+
 /** Latest saved line + time for student list previews (newest first). */
 export async function getLastDiaryPreview(
   studentId: string,

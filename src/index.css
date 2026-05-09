@@ -4,6 +4,7 @@
 @layer base {
   html {
     color-scheme: light;
+    font-size: var(--text-base);
   }
 
   body {
@@ -11,18 +12,26 @@
     background: var(--theme-background);
     color: var(--theme-charcoal);
     font-family:
+      'Plus Jakarta Sans',
       ui-sans-serif,
       system-ui,
       -apple-system,
-      Segoe UI,
+      'Segoe UI',
       Roboto,
-      Ubuntu,
-      Cantarell,
-      Noto Sans,
       sans-serif;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    line-height: var(--leading-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   #root {
     @apply min-h-dvh;
+  }
+
+  /* Consistent focus ring across interactive elements */
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--theme-ring);
   }
 }

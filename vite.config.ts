@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
@@ -16,6 +17,10 @@ function normalizeAppBase(): string {
 }
 
 const base = normalizeAppBase()
+
+const webManifest = JSON.parse(
+  readFileSync(path.join(rootDir, 'manifest.json'), 'utf-8'),
+) as Record<string, unknown>
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -40,39 +45,19 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'pwa-192.png', 'pwa-512.png'],
+      includeAssets: ['Student-Story-logo.png', 'Student-Story-logo-192.png', 'Student-Story-logo-512.png'],
       manifest: {
-        name: 'Student Story',
-        short_name: 'Student Story',
-        description:
-          'Offline student stories for teachers — profiles and logs with notes, voice, photos, and video.',
-        theme_color: '#155b5b',
-        background_color: '#f6f8f7',
-        display: 'standalone',
-        orientation: 'portrait-primary',
+        ...webManifest,
         start_url: base,
         scope: base,
-        icons: [
-          {
-            src: 'pwa-192.png',
-            sizes: '192x192',
-            type: 'image/png',
-          },
-          {
-            src: 'pwa-512.png',
-            sizes: '512x512',
-            type: 'image/png',
-          },
-          {
-            src: 'pwa-512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'maskable',
-          },
-        ],
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+      },
+      /** Without this, no service worker in `npm run dev` → no install prompt on localhost. */
+      devOptions: {
+        enabled: true,
+        navigateFallback: 'index.html',
       },
     }),
   ],

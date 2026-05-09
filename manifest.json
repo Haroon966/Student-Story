@@ -1,0 +1,28 @@
+{
+  "lang": "en",
+  "name": "Student Story",
+  "short_name": "Student Story",
+  "description": "Offline student stories for teachers — profiles and logs with notes, voice, photos, and video.",
+  "theme_color": "#155b5b",
+  "background_color": "#f6f8f7",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "Student-Story-logo-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "Student-Story-logo-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "Student-Story-logo-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

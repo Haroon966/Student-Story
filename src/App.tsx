@@ -7,6 +7,7 @@ const DownloadCenterPage = lazy(() =>
   import('@/pages/DownloadCenterPage').then((m) => ({ default: m.DownloadCenterPage })),
 )
 const SettingsPage = lazy(() => import('@/pages/SettingsPage').then((m) => ({ default: m.SettingsPage })))
+const CreditsPage = lazy(() => import('@/pages/CreditsPage').then((m) => ({ default: m.CreditsPage })))
 const StudentPage = lazy(() => import('@/pages/StudentPage').then((m) => ({ default: m.StudentPage })))
 const StudentCameraPage = lazy(() =>
   import('@/pages/StudentCameraPage').then((m) => ({ default: m.StudentCameraPage })),
@@ -30,6 +31,7 @@ export default function App() {
           <Route index element={<HomePage />} />
           <Route path="downloads" element={<DownloadCenterPage />} />
           <Route path="settings" element={<SettingsPage />} />
+          <Route path="settings/credits" element={<CreditsPage />} />
           <Route path="student/:id" element={<StudentPage />} />
           <Route path="student/:id/camera" element={<StudentCameraPage />} />
           <Route path="student/:id/profile" element={<StudentProfilePage />} />

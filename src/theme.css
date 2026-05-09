@@ -1,47 +1,106 @@
 :root {
   color-scheme: light;
 
-  --theme-primary: #155b5b;
-  --theme-primary-hover: #104848;
-  --theme-primary-soft: #e7f0ef;
+  /* ── Teal palette ────────────────────────────────────────── */
+  --teal-50:  #eef7f6;
+  --teal-100: #d4eceb;
+  --teal-200: #a9d8d5;
+  --teal-300: #6fbdb8;
+  --teal-400: #3a9e98;
+  --teal-500: #1f7b76;
+  --teal-600: #155b5b;   /* brand primary */
+  --teal-700: #114a4a;
+  --teal-800: #0c3636;
+  --teal-900: #082424;
+
+  /* ── Semantic colours ────────────────────────────────────── */
+  --theme-primary:            var(--teal-600);
+  --theme-primary-hover:      var(--teal-700);
+  --theme-primary-active:     var(--teal-800);
+  --theme-primary-soft:       var(--teal-50);
   --theme-primary-foreground: #ffffff;
 
-  --theme-background: #f6f8f7;
-  --theme-chat-bg: #eef4f2;
-  --theme-chat-pattern: radial-gradient(rgb(21 91 91 / 0.07) 1px, transparent 1px);
+  --theme-background:   #f5f7f6;
+  --theme-chat-bg:      #edf3f1;
+  --theme-chat-pattern: radial-gradient(rgb(21 91 91 / 0.065) 1px, transparent 1px);
 
-  --theme-charcoal: #36454f;
-  --theme-charcoal-muted: #657278;
+  --theme-charcoal:       #2d3a3f;
+  --theme-charcoal-muted: #627078;
 
-  --theme-white: #ffffff;
+  --theme-white:      #ffffff;
   --theme-soft-white: #fefefe;
 
-  --theme-surface: #ffffff;
-  --theme-surface-subtle: #fefefe;
-  --theme-surface-muted: #eef4f2;
+  --theme-surface:        #ffffff;
+  --theme-surface-subtle: #fafcfb;
+  --theme-surface-muted:  #edf3f1;
 
-  --theme-border: #dbe6e3;
-  --theme-border-strong: #c5d5d0;
-  --theme-ring: rgb(21 91 91 / 0.35);
+  --theme-border:        #d8e5e2;
+  --theme-border-strong: #bdd0cc;
+  --theme-ring: rgb(21 91 91 / 0.3);
 
-  /* Top bars (chats list + conversation) */
-  --theme-app-header-bg: var(--theme-primary);
+  --theme-app-header-bg: var(--teal-600);
   --theme-app-header-fg: #ffffff;
 
-  --theme-bubble-out: #d8ebe8;
-  --theme-bubble-meta: rgb(54 69 79 / 0.62);
+  --theme-bubble-out:  #d5ebe7;
+  --theme-bubble-meta: rgb(45 58 63 / 0.55);
 
-  --theme-composer-bg: var(--theme-white);
+  --theme-composer-bg: #ffffff;
 
-  --theme-danger: #b42318;
-  --theme-danger-hover: #9d1f15;
-  --theme-danger-bg: rgb(180 35 24 / 0.12);
+  --theme-danger:       #c0281c;
+  --theme-danger-hover: #a82418;
+  --theme-danger-bg:    rgb(192 40 28 / 0.09);
 
-  --accent: var(--theme-primary);
-  --accent-bg: var(--theme-primary-soft);
+  /* ── Type scale ──────────────────────────────────────────── */
+  --text-2xs: 10px;
+  --text-xs:  11px;
+  --text-sm:  13px;
+  --text-base: 15px;
+  --text-md:  16px;
+  --text-lg:  18px;
+  --text-xl:  22px;
+  --text-2xl: 26px;
+  --text-3xl: 32px;
+
+  /* ── Leading (line-height) ───────────────────────────────── */
+  --leading-none:   1;
+  --leading-tight:  1.15;
+  --leading-snug:   1.35;
+  --leading-normal: 1.5;
+  --leading-body:   1.625;
+  --leading-loose:  1.8;
+
+  /* ── Tracking (letter-spacing) ───────────────────────────── */
+  --tracking-tighter: -0.035em;
+  --tracking-tight:   -0.020em;
+  --tracking-normal:   0em;
+  --tracking-wide:     0.025em;
+  --tracking-wider:    0.05em;
+  --tracking-widest:   0.08em;
+
+  /* ── Border radius ───────────────────────────────────────── */
+  --radius-xs:   4px;
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --radius-xl:   20px;
+  --radius-2xl:  24px;
+  --radius-full: 9999px;
+
+  /* ── Elevation (shadows) ─────────────────────────────────── */
+  --shadow-xs: 0 1px 2px rgb(21 91 91 / 0.06);
+  --shadow-sm: 0 2px 8px rgb(21 91 91 / 0.08), 0 1px 2px rgb(0 0 0 / 0.04);
+  --shadow-md: 0 4px 16px rgb(21 91 91 / 0.10), 0 2px 4px rgb(0 0 0 / 0.05);
+  --shadow-lg: 0 8px 32px rgb(21 91 91 / 0.14), 0 2px 8px rgb(0 0 0 / 0.06);
+  --shadow-xl: 0 16px 48px rgb(21 91 91 / 0.18), 0 4px 12px rgb(0 0 0 / 0.08);
+
+  /* kept for legacy callers */
+  --shadow: var(--shadow-md);
+
+  /* ── Alias tokens used by Radix / Tailwind ───────────────── */
+  --accent:        var(--theme-primary);
+  --accent-bg:     var(--theme-primary-soft);
   --accent-border: var(--theme-primary);
-  --border: var(--theme-border-strong);
-  --text-h: var(--theme-charcoal);
-  --social-bg: var(--theme-surface);
-  --shadow: 0 12px 30px rgb(21 91 91 / 14%);
+  --border:        var(--theme-border-strong);
+  --text-h:        var(--theme-charcoal);
+  --social-bg:     var(--theme-surface);
 }
