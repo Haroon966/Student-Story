@@ -51,19 +51,25 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
 
   save: async (patch) => {
     const prev = (await db.appSettings.get(SETTINGS_ID)) ?? defaultSettings()
+    const photoPatch = 'educatorProfilePhoto' in patch ? patch.educatorProfilePhoto : undefined
+
     const next: AppSettings = {
       ...prev,
-      ...patch,
+      groqApiKey: patch.groqApiKey !== undefined ? patch.groqApiKey : prev.groqApiKey,
+      groqModel: patch.groqModel !== undefined ? patch.groqModel : prev.groqModel,
+      systemPromptExtra: patch.systemPromptExtra !== undefined ? patch.systemPromptExtra : prev.systemPromptExtra,
+      educatorName: patch.educatorName !== undefined ? patch.educatorName : prev.educatorName,
+      educatorDescription: patch.educatorDescription !== undefined ? patch.educatorDescription : prev.educatorDescription,
       id: SETTINGS_ID,
       updatedAt: Date.now(),
     }
-    if ('educatorProfilePhoto' in patch) {
-      if (patch.educatorProfilePhoto == null) {
-        delete next.educatorProfilePhoto
-      } else {
-        next.educatorProfilePhoto = patch.educatorProfilePhoto
-      }
+
+    if (photoPatch === null) {
+      delete next.educatorProfilePhoto
+    } else if (photoPatch !== undefined) {
+      next.educatorProfilePhoto = photoPatch
     }
+
     await db.appSettings.put(next)
     set({ settings: next })
   },
