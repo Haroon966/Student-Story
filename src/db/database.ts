@@ -39,6 +39,10 @@ export interface AppSettings {
   groqApiKey: string
   groqModel: string
   systemPromptExtra: string
+  /** Educator profile (shown in Settings and passed to AI when set). */
+  educatorName?: string
+  educatorDescription?: string
+  educatorProfilePhoto?: Blob
   updatedAt: number
 }
 
@@ -87,6 +91,14 @@ export class StudentStoryDB extends Dexie {
       })
 
     this.version(3).stores({
+      students: 'id, name, createdAt, updatedAt, favorite, blocked',
+      diaryEntries: 'id, studentId, createdAt, updatedAt',
+      diaryMedia: 'id, entryId, kind, createdAt',
+      appSettings: 'id, updatedAt',
+      aiMessages: 'id, studentId, createdAt, role',
+    })
+
+    this.version(4).stores({
       students: 'id, name, createdAt, updatedAt, favorite, blocked',
       diaryEntries: 'id, studentId, createdAt, updatedAt',
       diaryMedia: 'id, entryId, kind, createdAt',

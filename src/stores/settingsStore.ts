@@ -11,11 +11,17 @@ export const GROQ_MODEL_PRESETS = [
   { value: 'mixtral-8x7b-32768', label: 'Mixtral 8x7B (32K)' },
 ] as const
 
+type SettingsPatch = Partial<
+  Pick<AppSettings, 'groqApiKey' | 'groqModel' | 'systemPromptExtra' | 'educatorName' | 'educatorDescription'>
+> & {
+  educatorProfilePhoto?: Blob | null
+}
+
 type SettingsState = {
   settings: AppSettings | null
   loading: boolean
   hydrate: () => Promise<void>
-  save: (patch: Partial<Pick<AppSettings, 'groqApiKey' | 'groqModel' | 'systemPromptExtra'>>) => Promise<void>
+  save: (patch: SettingsPatch) => Promise<void>
   clearApiKey: () => Promise<void>
   clearAllAiChats: () => Promise<void>
 }
@@ -50,6 +56,13 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       ...patch,
       id: SETTINGS_ID,
       updatedAt: Date.now(),
+    }
+    if ('educatorProfilePhoto' in patch) {
+      if (patch.educatorProfilePhoto == null) {
+        delete next.educatorProfilePhoto
+      } else {
+        next.educatorProfilePhoto = patch.educatorProfilePhoto
+      }
     }
     await db.appSettings.put(next)
     set({ settings: next })

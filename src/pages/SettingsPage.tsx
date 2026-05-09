@@ -1,11 +1,14 @@
+import { WebcamCaptureDialog } from '@/components/diary/WebcamCaptureDialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useBlobUrl } from '@/hooks/useBlobUrl'
 import { testGroqConnection } from '@/lib/groq'
+import { studentInitials } from '@/lib/studentInitials'
 import { DEFAULT_MODEL, GROQ_MODEL_PRESETS, useSettingsStore } from '@/stores/settingsStore'
-import { Bot, ChevronLeft, ChevronRight, Eye, EyeOff, Info, Loader2, MessageSquareX, Zap } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { Bot, Camera, ChevronLeft, ChevronRight, Eye, EyeOff, Info, Loader2, MessageSquareX, Trash2, Upload, User, Zap } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 function SettingsSection({
@@ -61,15 +64,25 @@ function SettingsSection({
 
 export function SettingsPage() {
   const { settings, loading, hydrate, save, clearApiKey, clearAllAiChats } = useSettingsStore()
+  const educatorPhotoUrl = useBlobUrl(settings?.educatorProfilePhoto ?? null)
+
   const [keyInput,     setKeyInput]     = useState('')
   const [showKey,      setShowKey]      = useState(false)
   const [modelChoice,  setModelChoice]  = useState<string>(DEFAULT_MODEL)
   const [customModel,  setCustomModel]  = useState('')
   const [extraPrompt,  setExtraPrompt]  = useState('')
+  const [profileName,  setProfileName]  = useState('')
+  const [profileDesc,  setProfileDesc]  = useState('')
+  const [profileBusy,  setProfileBusy]  = useState(false)
+  const [profileSaveBusy, setProfileSaveBusy] = useState(false)
+  const [cameraOpen,   setCameraOpen]   = useState(false)
+
   const [testStatus,   setTestStatus]   = useState<string | null>(null)
   const [testBusy,     setTestBusy]     = useState(false)
   const [saveBusy,     setSaveBusy]     = useState(false)
   const [clearAiBusy,  setClearAiBusy]  = useState(false)
+
+  const profilePhotoRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => { void hydrate() }, [hydrate])
 
@@ -81,6 +94,8 @@ export function SettingsPage() {
     if (preset) { setModelChoice(settings.groqModel); setCustomModel('') }
     else         { setModelChoice('custom'); setCustomModel(settings.groqModel) }
     setExtraPrompt(settings.systemPromptExtra)
+    setProfileName(settings.educatorName ?? '')
+    setProfileDesc(settings.educatorDescription ?? '')
     /* eslint-enable react-hooks/set-state-in-effect */
   }, [settings])
 
@@ -100,6 +115,44 @@ export function SettingsPage() {
     try { await testGroqConnection(key); setTestStatus('Connection OK — key is valid.') }
     catch (e) { setTestStatus(e instanceof Error ? e.message : 'Connection failed.') }
     finally { setTestBusy(false) }
+  }
+
+  async function setEducatorPhotoBlob(blob: Blob) {
+    if (!blob.size || profileBusy) return
+    setProfileBusy(true)
+    try {
+      await save({ educatorProfilePhoto: blob })
+    } finally {
+      setProfileBusy(false)
+    }
+  }
+
+  async function onEducatorPhotoFile(files: FileList | null) {
+    const file = files?.[0]
+    if (!file || !file.type.startsWith('image/')) return
+    await setEducatorPhotoBlob(file)
+  }
+
+  async function removeEducatorPhoto() {
+    if (profileBusy) return
+    setProfileBusy(true)
+    try {
+      await save({ educatorProfilePhoto: null })
+    } finally {
+      setProfileBusy(false)
+    }
+  }
+
+  async function handleSaveProfile() {
+    setProfileSaveBusy(true)
+    try {
+      await save({
+        educatorName: profileName.trim(),
+        educatorDescription: profileDesc.trim(),
+      })
+    } finally {
+      setProfileSaveBusy(false)
+    }
   }
 
   async function handleClearAi() {
@@ -137,6 +190,101 @@ export function SettingsPage() {
           Groq AI runs in your browser — your API key stays on this device and is never included in backups.
         </p>
       </div>
+
+      {/* Educator profile */}
+      <SettingsSection
+        icon={<User className="size-4" />}
+        title="Your profile"
+        description="Picture, display name, and a short bio: what you do and what you can offer. Saved on this device. The AI coach uses this alongside any extra instructions below."
+      >
+        <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+            <div className="shrink-0">
+              {educatorPhotoUrl ? (
+                <img src={educatorPhotoUrl} alt="" className="size-24 rounded-full object-cover ring-2 ring-[var(--theme-border)]" />
+              ) : (
+                <div
+                  className="flex size-24 items-center justify-center rounded-full bg-[var(--theme-surface-muted)] font-semibold text-[var(--theme-primary)] ring-2 ring-[var(--theme-border)]"
+                  style={{ fontSize: 'var(--text-lg)' }}
+                  aria-hidden
+                >
+                  {studentInitials(profileName || '?')}
+                </div>
+              )}
+            </div>
+            <div className="flex min-w-0 flex-1 flex-col gap-2">
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  disabled={profileBusy}
+                  onClick={() => profilePhotoRef.current?.click()}
+                >
+                  <Upload className="size-4" aria-hidden />
+                  Choose image
+                </Button>
+                <Button type="button" variant="outline" size="sm" className="gap-2" disabled={profileBusy} onClick={() => setCameraOpen(true)}>
+                  <Camera className="size-4" aria-hidden />
+                  Take photo
+                </Button>
+                {settings.educatorProfilePhoto ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="gap-2 text-[var(--theme-danger)] hover:bg-[var(--theme-danger-bg)]"
+                    disabled={profileBusy}
+                    onClick={() => void removeEducatorPhoto()}
+                  >
+                    <Trash2 className="size-4" aria-hidden />
+                    Remove photo
+                  </Button>
+                ) : null}
+              </div>
+              <input
+                ref={profilePhotoRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  void onEducatorPhotoFile(e.target.files)
+                  e.target.value = ''
+                }}
+              />
+              <p className="text-xs text-[var(--theme-charcoal-muted)]">Optional. JPEG, PNG, WebP, or other images.</p>
+            </div>
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="educator-name" style={{ fontSize: 'var(--text-sm)', fontWeight: 500 }}>
+              Name
+            </Label>
+            <Input id="educator-name" value={profileName} onChange={(e) => setProfileName(e.target.value)} placeholder="e.g. Jamie Chen" autoComplete="name" />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="educator-about" style={{ fontSize: 'var(--text-sm)', fontWeight: 500 }}>
+              About you
+            </Label>
+            <Textarea
+              id="educator-about"
+              value={profileDesc}
+              onChange={(e) => setProfileDesc(e.target.value)}
+              placeholder="What you do in your role — and how you support students or families (e.g. specialties, grades, accessibility, languages)…"
+              rows={4}
+            />
+          </div>
+
+          <Button type="button" disabled={profileSaveBusy} onClick={() => void handleSaveProfile()}>
+            {profileSaveBusy ? <Loader2 className="size-4 animate-spin" /> : null}
+            Save profile
+          </Button>
+        </div>
+      </SettingsSection>
+
+      <WebcamCaptureDialog open={cameraOpen} onOpenChange={setCameraOpen} onCapture={(blob) => void setEducatorPhotoBlob(blob)} />
 
       {/* Groq API */}
       <SettingsSection icon={<Zap className="size-4" />} title="Groq API" description={<>Create a key at{' '}<a href="https://console.groq.com/keys" target="_blank" rel="noreferrer" className="font-medium underline" style={{ color: 'var(--theme-primary)' }}>console.groq.com</a>.</>}>

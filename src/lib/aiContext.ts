@@ -96,8 +96,20 @@ export async function buildStudentBrief(
     entries: briefEntries,
   }
 
+  const appSettings = await db.appSettings.get('app')
+  const educatorName = appSettings?.educatorName?.trim()
+  const educatorAbout = appSettings?.educatorDescription?.trim()
+
   const extra = extraSystemInstructions.trim()
   const systemParts = [BASE_SYSTEM]
+  if (educatorName || educatorAbout) {
+    const bio: string[] = [
+      'Educator profile from Settings (use this to tailor tone and practical suggestions — not shown to students):',
+    ]
+    if (educatorName) bio.push(`Name: ${educatorName}`)
+    if (educatorAbout) bio.push(`What they do and what they can offer (their words):\n${educatorAbout}`)
+    systemParts.push(bio.join('\n\n'))
+  }
   if (extra) systemParts.push('Additional instructions from the teacher:\n' + extra)
   systemParts.push('\n--- STUDENT DATA (JSON) ---\n' + JSON.stringify(payload, null, 2))
 
