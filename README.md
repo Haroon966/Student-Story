@@ -1,66 +1,246 @@
-# Student Story
+<div align="center">
 
-> A calm, private space to remember each student—not a gradebook, not a district system, just **your** thread of moments and notes for **them**.
+<!-- Animated Banner -->
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=200&section=header&text=Student%20Story&fontSize=60&fontColor=fff&animation=fadeIn&fontAlignY=38&desc=One%20student.%20One%20story.%20Unfolding%20over%20time.&descAlignY=58&descSize=18" width="100%"/>
+
+<!-- Badges Row 1 -->
+<p>
+  <img src="https://img.shields.io/badge/License-Custom%20Open-blueviolet?style=for-the-badge&logo=opensourceinitiative&logoColor=white" alt="License"/>
+  <img src="https://img.shields.io/badge/Privacy-Local%20First-green?style=for-the-badge&logo=shieldsdotio&logoColor=white" alt="Privacy"/>
+  <img src="https://img.shields.io/badge/Platform-Mobile%20%7C%20Tablet%20%7C%20Desktop-blue?style=for-the-badge&logo=devices&logoColor=white" alt="Platform"/>
+  <img src="https://img.shields.io/badge/AI-Optional%20Coach-orange?style=for-the-badge&logo=openai&logoColor=white" alt="AI"/>
+</p>
+
+<!-- Badges Row 2 -->
+<p>
+  <img src="https://img.shields.io/badge/For-Teachers%20%26%20Educators-ff69b4?style=for-the-badge&logo=bookstack&logoColor=white" alt="For Teachers"/>
+  <img src="https://img.shields.io/badge/Data-Stays%20On%20Your%20Device-teal?style=for-the-badge&logo=databricks&logoColor=white" alt="Data"/>
+  <img src="https://img.shields.io/badge/Credit-Olufsen-yellow?style=for-the-badge&logo=github&logoColor=black" alt="Credit"/>
+</p>
+
+<br/>
+
+> *"A calm, private space to remember each student — not a gradebook, not a district system, just **your** thread of moments and notes for **them**."*
+
+<br/>
+
+</div>
 
 ---
 
-## Why it exists
+## 🌟 Why Student Story Exists
 
-Teachers carry an enormous amount of detail in their heads: what happened in class last Tuesday, a breakthrough after lunch, a tricky conversation with home, a photo that captures engagement. **Student Story** gives each learner their own ongoing narrative—so you can jot, speak, snap, or clip something short **in the moment**, without wrestling with spreadsheets or shared drives.
+Teachers carry an **enormous amount of detail** in their heads — what happened in class last Tuesday, a breakthrough after lunch, a tricky conversation with home, a photo that captures genuine engagement.
 
-It is built around one idea: **one student, one story**, unfolding over time.
+**Student Story** gives each learner their own ongoing narrative so you can jot, speak, snap, or clip something short **in the moment** — without wrestling with spreadsheets or shared drives.
+
+It is built around one simple idea:
+
+<div align="center">
+
+```
+╔═══════════════════════════════════════╗
+║   📖  ONE STUDENT.  ONE STORY.        ║
+║        Unfolding over time.           ║
+╚═══════════════════════════════════════╝
+```
+
+</div>
 
 ---
 
-## What you can capture
+## ✨ What You Can Capture
 
 Every entry can mix **text** with richer kinds of memory:
 
-- **Written notes** — quick reflections, observations, meeting reminders, or fuller write-ups when you have time.
-- **Voice** — tap record when typing is awkward; your tone and pace stay part of the record.
-- **Photos & video** — evidence of work, environment, or milestones you might want to revisit later.
-- **Captions** — add context under images or clips so future-you knows *why* something mattered.
+| Type | Icon | Description |
+|------|------|-------------|
+| **Written Notes** | 📝 | Quick reflections, observations, meeting reminders, or fuller write-ups when you have time |
+| **Voice** | 🎙️ | Tap record when typing is awkward — your tone and pace stay part of the record |
+| **Photos & Video** | 📸 | Evidence of work, environment, or milestones you might want to revisit later |
+| **Captions** | 💬 | Add context under images or clips so future-you knows *why* something mattered |
 
-The layout feels familiar—like a conversation with yourself about that student—so adding something small doesn’t feel like “doing paperwork.”
-
----
-
-## Built for privacy and trust
-
-- **Your device is home base.** What you save is meant to live with you on the phone, tablet, or laptop where you use the app—not handed off to a platform that monetises school data.
-- **You choose what leaves.** If you want a copy elsewhere, you can export a backup file when you’re ready; nothing ships out silently.
-- **Blocking & favourites** — star students who need quick access at the top of your list, or pause new entries for someone while keeping history intact until you’re ready to revisit.
-
-Student Story is for professionals who already protect confidentiality every day; the app tries to stay out of the way and honour that responsibility.
+> The layout feels familiar — like a **conversation with yourself** about that student — so adding something small doesn't feel like "doing paperwork."
 
 ---
 
-## Profiles & organisation
+## 🔒 Built for Privacy & Trust
 
-Each student has a simple **profile**—name, optional notes (guardians, class group, strategies that work), and space for a **profile photo** if you like a face next to the name. From there you jump straight into their story thread: everything chronological, readable, and easy to skim back through before a meeting or a new term.
+<div align="center">
+
+```
+ 🏠 Your Device          🚫 No Silent Uploads     📤 You Choose
+ is Home Base            Data stays local          what leaves
+     │                         │                        │
+     ▼                         ▼                        ▼
+  Everything            No third-party           Export backup
+  lives with            monetisation              files anytime
+    you                 of school data            on your terms
+```
+
+</div>
+
+- 🏠 **Your device is home base** — what you save lives with you on the phone, tablet, or laptop where you use the app
+- 🚫 **Nothing ships out silently** — no platform quietly monetising school data
+- 📤 **You choose what leaves** — export a backup file whenever you're ready
+- ⭐ **Favourites & blocking** — star students for quick access, or pause new entries while keeping history intact
+
+> Student Story is for professionals who already protect confidentiality every day. The app tries to stay out of the way and **honour that responsibility**.
 
 ---
 
-## Optional AI coach
+## 👤 Profiles & Organisation
 
-Sometimes it helps to step back and ask: *What patterns am I noticing? What might I try next?*
+Each student gets their own simple **profile**:
 
-Student Story can connect to an **optional AI coach** that reads **only what you have already stored** for that student on that device. It cannot rewrite your logs or change your files—it’s there to suggest summaries, questions, or ideas **you** still judge and act on. If you never turn it on, the rest of the app works exactly the same.
+```
+┌─────────────────────────────────────────────┐
+│  📷 [Photo]   Jamie Doe                     │
+│               Class 4B · Spring Term        │
+│  ─────────────────────────────────────────  │
+│  📌 Notes: Works well with visual prompts   │
+│            Guardian: Alex Doe               │
+│  ─────────────────────────────────────────  │
+│  📖 Story Thread ↓                         │
+│     Mar 12 · "Great moment during reading" │
+│     Mar 08 · Voice note after parent call  │
+│     Mar 05 · Photo of project work         │
+└─────────────────────────────────────────────┘
+```
+
+Everything is **chronological, readable, and easy to skim back through** before a meeting or a new term.
 
 ---
 
-## Who it’s for
+## 🤖 Optional AI Coach
 
-Classroom teachers, learning-support staff, mentors, and anyone who needs a **private, human-sized record** per learner—not a replacement for official reporting tools, but a companion for the everyday story of growth, struggle, and small wins.
+Sometimes it helps to step back and ask:
+
+> *"What patterns am I noticing? What might I try next?"*
+
+<div align="center">
+
+| Feature | Detail |
+|---------|--------|
+| 🔍 **Reads only your data** | Looks only at what you've already stored for that student |
+| 🚫 **Can't change your logs** | It cannot rewrite or modify any of your files |
+| 💡 **Suggests, never decides** | Summaries, questions, ideas — you judge and act |
+| 🔧 **Fully optional** | Turn it off and the rest of the app works exactly the same |
+
+</div>
+
+> The AI coach is a **thinking partner**, not an authority. You stay in control.
 
 ---
 
-## In short
+## 👩‍🏫 Who It's For
 
-**Student Story** helps you honour the narrative of each child: capture honestly, store locally, reflect when you’re ready—and keep the thread of their story in one trustworthy place.
+<div align="center">
+
+```
+🏫 Classroom        🎓 Learning        👥 Mentors &        🌱 Anyone who needs
+   Teachers            Support Staff      Support Staff       a private, human-
+                                                              sized record per
+                                                              learner
+```
+
+</div>
+
+Student Story is **not** a replacement for official reporting tools — it's a **companion** for the everyday story of growth, struggle, and small wins.
 
 ---
 
-## Sharing & building on this project
+## 🚀 Getting Started
 
-You are welcome to **use, change, share, and even sell** work derived from Student Story. If you do, please **credit Olufsen** as the original creator and **include a link to this repository** so others can find the source—the full rules are in the [`LICENSE`](LICENSE) file. Replace the GitHub URL there if your canonical fork moves.
+```bash
+# Clone the repository
+git clone https://github.com/YOUR_USERNAME/student-story.git
+
+# Navigate into the project
+cd student-story
+
+# Install dependencies
+npm install
+
+# Run the app
+npm start
+```
+
+> 📌 Replace `YOUR_USERNAME` with your GitHub handle.
+
+---
+
+## 📁 Project Structure
+
+```
+student-story/
+├── 📂 src/
+│   ├── 📂 components/      # UI components
+│   ├── 📂 screens/         # App screens
+│   ├── 📂 storage/         # Local data layer
+│   └── 📂 ai/              # Optional AI coach integration
+├── 📂 assets/              # Icons, fonts, images
+├── 📄 LICENSE              # Licensing terms
+└── 📄 README.md            # You are here
+```
+
+---
+
+## 📜 License & Sharing
+
+<div align="center">
+
+![License Badge](https://img.shields.io/badge/Use%20It-✔️-brightgreen?style=flat-square)
+![Change It](https://img.shields.io/badge/Change%20It-✔️-brightgreen?style=flat-square)
+![Share It](https://img.shields.io/badge/Share%20It-✔️-brightgreen?style=flat-square)
+![Sell It](https://img.shields.io/badge/Sell%20It-✔️-brightgreen?style=flat-square)
+
+</div>
+
+You are welcome to **use, change, share, and even sell** work derived from Student Story.
+
+**Two simple asks:**
+1. 🙏 **Credit Olufsen** as the original creator
+2. 🔗 **Include a link to this repository** so others can find the source
+
+Full terms are in the [`LICENSE`](LICENSE) file.
+
+---
+
+## 🙌 Contributing
+
+Contributions, issues, and feature requests are welcome!
+
+<div align="center">
+
+[![Issues](https://img.shields.io/github/issues/YOUR_USERNAME/student-story?style=for-the-badge&color=red)](https://github.com/YOUR_USERNAME/student-story/issues)
+[![Pull Requests](https://img.shields.io/github/issues-pr/YOUR_USERNAME/student-story?style=for-the-badge&color=blue)](https://github.com/YOUR_USERNAME/student-story/pulls)
+[![Stars](https://img.shields.io/github/stars/YOUR_USERNAME/student-story?style=for-the-badge&color=yellow)](https://github.com/YOUR_USERNAME/student-story/stargazers)
+
+</div>
+
+1. 🍴 Fork the project
+2. 🌿 Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. 💾 Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. 📤 Push to the branch (`git push origin feature/AmazingFeature`)
+5. 🔃 Open a Pull Request
+
+---
+
+## 💬 In Short
+
+<div align="center">
+
+> **Student Story** helps you honour the narrative of each child:
+> capture honestly, store locally, reflect when you're ready —
+> and keep the thread of their story in one trustworthy place.
+
+<br/>
+
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=120&section=footer&animation=fadeIn" width="100%"/>
+
+<br/>
+
+Made with ❤️ by **[Olufsen](https://github.com/YOUR_USERNAME)**
+
+</div>
